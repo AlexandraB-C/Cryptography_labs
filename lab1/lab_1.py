@@ -1,23 +1,30 @@
 def caesar_cipher(msg, key, op):
+    # prepare message: uppercase, remove spaces
     msg = msg.upper().replace(' ', '')
+    normal = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
     result = []
     for char in msg:
         if char.isalpha():
-            pos = ord(char) - ord('A')
+            # find position in alphabet
+            pos = normal.index(char)
             if op == 'encrypt':
                 new_pos = (pos + key) % 26
             elif op == 'decrypt':
                 new_pos = (pos - key) % 26
-            result.append(chr(new_pos + ord('A')))
+            # get shifted letter
+            result.append(normal[new_pos])
     return ''.join(result)
 
 def build_permuted_alphabet(perm_key):
+    # use set to avoid duplicates
     seen = set()
     perm = []
+    # add unique letters from key
     for c in perm_key.upper():
         if c not in seen:
             perm.append(c)
             seen.add(c)
+    # add remaining alphabet letters
     for c in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
         if c not in seen:
             perm.append(c)
@@ -25,17 +32,21 @@ def build_permuted_alphabet(perm_key):
     return ''.join(perm)
 
 def caesar_with_perm(msg, shift_key, perm_key, op):
+    # prepare message: uppercase, remove spaces
     msg = msg.upper().replace(' ', '')
+    # build permuted alphabet
     perm_alphabet = build_permuted_alphabet(perm_key)
     normal = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
     result = []
     for c in msg:
         if c.isalpha():
             if op == 'encrypt':
+                # find normal position, shift, get permuted letter
                 pos = normal.index(c)
                 new_pos = (pos + shift_key) % 26
                 result.append(perm_alphabet[new_pos])
             elif op == 'decrypt':
+                # find permuted position, unshift, get normal letter
                 pos = perm_alphabet.index(c)
                 new_pos = (pos - shift_key) % 26
                 result.append(normal[new_pos])
